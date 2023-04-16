@@ -18,6 +18,14 @@ from pandas.api.types import (
 header = st.container()
 data_section = st.container()
 
+#### define datatypes for variables that need coverting ####
+# if adding variables, clear cache on website #
+dtype_dict_dock = {'Year_Appeal_Filed': int, 'PACER_Gen': 'category',
+                   'DistrictCourt': 'category', 'District_Court': 'category', 
+                   'FY_Appeal_Filed': 'Int64'}
+# link to docket codebook
+url_dock = 'https://empirical.law.uiowa.edu/sites/empirical.law.uiowa.edu/files/wysiwyg_uploads/codebook_for_the_docket_dataset_-_2021-08-24.pdf'
+
 # function to filter data
 # see blog: https://blog.streamlit.io/auto-generate-a-dataframe-filtering-ui-in-streamlit-with-filter_dataframe/
 def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -70,7 +78,12 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             elif is_numeric_dtype(df[column]):
                 _min = float(df[column].min())
                 _max = float(df[column].max())
-                step = (_max - _min) / 100
+                # step size of 1 for integers
+                if df[column].dtype in ['int64', 'Int64']:
+                    step = float(1)
+                # smaller step size for floats
+                else:
+                    step = (_max - _min) / 100
                 user_num_input = right.slider(
                     f"Values for {column}",
                     min_value=_min,
@@ -108,6 +121,7 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 ## header section
 with header:
     st.title('Federal Circuit Docket Dataset')
+    st.write("[The current codebook for the docket dataset may be downloaded here.](%s)" % url_dock)
     
 ## data section
 with data_section:
@@ -115,7 +129,7 @@ with data_section:
     # define function to load data
     # st.cache_data means the data is stored and doesn't need to be read again each time the user changes a variable
     @st.cache_data
-    def load_data(data_path, state_name):
+    def load_data(data_path, state_name, dtype_dict):
         '''
         Parameters
         ----------
@@ -128,13 +142,14 @@ with data_section:
         -------
         df : DataFrame
         '''
-        df = pd.read_csv(data_path, sep = '\t')
+        df = pd.read_csv(data_path, sep = '\t', dtype = dtype_dict)
         # save the data in the session_state so it can be accessed from other pages
         st.session_state[state_name] = df
         return df
     
     # read in data and display
-    df_dock = load_data('https://raw.githubusercontent.com/sdannels/Federal_Circuit_Decisions_Beta/main/Data/2022-12-31%20CAFC%20Dockets.tab', state_name = 'df_dock')
+    df_dock = load_data('https://raw.githubusercontent.com/sdannels/Federal_Circuit_Decisions_Beta/main/Data/2022-12-31%20CAFC%20Dockets.tab', 
+                        state_name = 'df_dock', dtype_dict = dtype_dict_dock)
     
     # set up columns for widgets
     col1, col2 = st.columns(2)

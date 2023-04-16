@@ -21,6 +21,17 @@ st.set_page_config(layout="wide")
 header = st.container()
 data_section = st.container()
 
+#### define datatypes for variables that need coverting ####
+# if adding variables, clear cache on website #
+dtype_dict = {'uniqueID': str, 'docYear': int, 'origin': 'category',
+              'docType': 'category', 'DisputeType': 'category', 
+              'Dispute_General': 'category', 'utilityPatent': 'category', 
+              'designPatent': 'category', 'plantPatent': 'category',
+              'designPatent_old': 'category', 'Appellant_Type_Primary': 'category',
+              'Dissent': 'category', 'Concurrence': 'category'}
+# link to document codebook
+url_document = 'https://dataverse.harvard.edu/api/access/datafile/6907843'
+
 # function to filter data
 # see blog: https://blog.streamlit.io/auto-generate-a-dataframe-filtering-ui-in-streamlit-with-filter_dataframe/
 def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
@@ -33,7 +44,7 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Filtered dataframe
     """
-    modify = st.checkbox("Filter Data")
+    modify = st.checkbox("Click Here to Filter Data")
 
     if not modify:
         return df
@@ -73,7 +84,12 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
             elif is_numeric_dtype(df[column]):
                 _min = float(df[column].min())
                 _max = float(df[column].max())
-                step = (_max - _min) / 100
+                # step size of 1 for integers
+                if df[column].dtype in ['int64', 'Int64']:
+                    step = float(1)
+                # smaller step size for floats
+                else:
+                    step = (_max - _min) / 100
                 user_num_input = right.slider(
                     f"Values for {column}",
                     min_value=_min,
@@ -111,6 +127,19 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 ## header section
 with header:
     st.title('Federal Circuit Decisions Database')
+    # link to code book
+    st.write("""The Compendium of Federal Circuit decisions is a a database created to both standardize and
+                analyze decisions of the United States Court of Appeals for the Federal Circuit.
+                The Compendium includes all opinions, orders, and summary affirmances that were
+                released on the Federal Circuit’s website—essentially all opinions since 2004 and 
+                all summary affirmances since 2007, along with numerous orders and other documents. 
+                Multiple fields are coded in a standardized format that will allow future 
+                researchers to avoid recollecting fundamental fields such as case names or opinion dates. 
+                The database also has the capacity for expansion, and new information about the decisions can 
+                easily be added.  Public access to the database is provided in an easy-to-use web-based 
+                interface that allows for immediate visualization of data.""")
+    st.write("[The current codebook for the document dataset may be downloaded here.](%s)" % url_document)
+    
 
 ## data section
 with data_section:
@@ -118,7 +147,7 @@ with data_section:
     # define function to load data
     # st.cache_data means the data is stored and doesn't need to be read again each time the user changes a variable
     @st.cache_data
-    def load_data(data_path, state_name):
+    def load_data(data_path, state_name, dtype_dict):
         '''
         Parameters
         ----------
@@ -131,20 +160,21 @@ with data_section:
         -------
         df : DataFrame
         '''
-        df = pd.read_csv(data_path, sep = '\t')
+        df = pd.read_csv(data_path, sep = '\t', dtype = dtype_dict)
         # save the data in the session_state so it can be accessed from other pages
         st.session_state[state_name] = df
         return df
     
     # read in data and display
-    df = load_data('https://raw.githubusercontent.com/sdannels/Federal_Circuit_Decisions_Beta/main/Data/appeals%202022-12-31%20Release.tab', state_name = 'df')
+    df = load_data('https://raw.githubusercontent.com/sdannels/Federal_Circuit_Decisions_Beta/main/Data/appeals%202022-12-31%20Release.tab', 
+                   state_name = 'df', dtype_dict = dtype_dict)
     
     # set up columns for widgets
     col1, col2 = st.columns(2)
     
     # option to select columns to exclude from dataframe
     with col1:
-        select_cols = st.checkbox("Select Variables")
+        select_cols = st.checkbox("Click Here to Select Variables")
         if select_cols:
             df_cols = st.multiselect("Select Columns:", df.columns)
             # include selected columns

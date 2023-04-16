@@ -53,7 +53,7 @@ with case_search_section:
         if len(search_out) > 1:
             st.error('There is more than one case matching your search criteria.' \
                      ' Please be more specific in your search. You may try using' \
-                     ' the "Filter Data" button above to search the data.', 
+                     ' the "Filter Data" button on the home page to search the data.', 
                      icon="🚨")
         elif len(search_out) == 0:
             st.error('No cases match this search criteria.', 

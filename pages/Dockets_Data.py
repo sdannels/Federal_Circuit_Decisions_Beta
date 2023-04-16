@@ -7,7 +7,7 @@ Created on Wed Mar 22 21:21:47 2023
 
 import pandas as pd
 import streamlit as st
-from Config.config import docket_data_link, docket_codebook_link, dtype_dict_dock, filter_dataframe, load_data
+from config import docket_data_link, docket_codebook_link, dtype_dict_dock, filter_dataframe, load_data
 
 # create sections on page
 header = st.container()

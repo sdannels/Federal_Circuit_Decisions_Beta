@@ -7,7 +7,7 @@ Created on Wed Mar 22 20:11:08 2023
 
 import pandas as pd
 import streamlit as st
-from Config.config import load_data, document_data_link
+from config import load_data, document_data_link
 
 # read in data from first page (stored in session state)
 if 'df' in st.session_state:

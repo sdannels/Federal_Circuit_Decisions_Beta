@@ -7,7 +7,7 @@ Created on Wed Mar 22 21:40:38 2023
 
 import pandas as pd
 import streamlit as st
-from Config.config import load_data, docket_data_link
+from config import load_data, docket_data_link
 
 # read in data from dockets page (stored in session state)
 if 'df_dock' in st.session_state:

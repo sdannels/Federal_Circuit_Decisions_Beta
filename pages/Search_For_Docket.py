@@ -15,7 +15,8 @@ if 'df_dock' in st.session_state:
 # if dockets page was not run yet, will need to read in data again
 else:
     # read in data and display
-    df_dock = load_data(docket_data_link, state_name = 'df_dock')
+    df_dock = load_data(docket_data_link, 
+                        state_name = 'df_dock', dtype_dict = dtype_dict_dock)
     
 # set up section for searching for case
 docket_search_section = st.container()

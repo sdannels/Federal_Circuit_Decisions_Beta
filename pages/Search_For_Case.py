@@ -7,14 +7,15 @@ Created on Wed Mar 22 20:11:08 2023
 
 import pandas as pd
 import streamlit as st
-from config import load_data, document_data_link
+from config import load_data, document_data_link, dtype_dict
 
 # read in data from first page (stored in session state)
 if 'df' in st.session_state:
     df = st.session_state['df']
 # if first page was not run yet, will need to read in data again
 else:
-    df = load_data(document_data_link, state_name = 'df')
+    df = load_data(document_data_link, 
+                   state_name = 'df', dtype_dict = dtype_dict)
 
 # set up section for searching for case
 case_search_section = st.container()

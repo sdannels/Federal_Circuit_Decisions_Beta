@@ -13,6 +13,7 @@ from pandas.api.types import (
     is_numeric_dtype,
     is_object_dtype,
 )
+from Config.config import url_document
 
 # set screen display to wide
 st.set_page_config(layout="wide")
@@ -29,8 +30,6 @@ dtype_dict = {'uniqueID': str, 'docYear': int, 'origin': 'category',
               'designPatent': 'category', 'plantPatent': 'category',
               'designPatent_old': 'category', 'Appellant_Type_Primary': 'category',
               'Dissent': 'category', 'Concurrence': 'category'}
-# link to document codebook
-url_document = 'https://dataverse.harvard.edu/api/access/datafile/6907843'
 
 # function to filter data
 # see blog: https://blog.streamlit.io/auto-generate-a-dataframe-filtering-ui-in-streamlit-with-filter_dataframe/

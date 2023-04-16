@@ -13,6 +13,7 @@ from pandas.api.types import (
     is_numeric_dtype,
     is_object_dtype,
 )
+from Config.config import url_dock
 
 # create sections on page
 header = st.container()
@@ -23,8 +24,6 @@ data_section = st.container()
 dtype_dict_dock = {'Year_Appeal_Filed': int, 'PACER_Gen': 'category',
                    'DistrictCourt': 'category', 'District_Court': 'category', 
                    'FY_Appeal_Filed': 'Int64'}
-# link to docket codebook
-url_dock = 'https://empirical.law.uiowa.edu/sites/empirical.law.uiowa.edu/files/wysiwyg_uploads/codebook_for_the_docket_dataset_-_2021-08-24.pdf'
 
 # function to filter data
 # see blog: https://blog.streamlit.io/auto-generate-a-dataframe-filtering-ui-in-streamlit-with-filter_dataframe/

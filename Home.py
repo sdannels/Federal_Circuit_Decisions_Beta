@@ -7,7 +7,7 @@ Created on Thu Feb 16 20:00:30 2023
 
 import pandas as pd
 import streamlit as st
-from Config.config import document_data_link, document_codebook_link, dtype_dict, filter_dataframe, load_data
+from config import document_data_link, document_codebook_link, dtype_dict, filter_dataframe, load_data
 
 # set screen display to wide
 st.set_page_config(layout="wide")

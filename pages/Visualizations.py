@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
-import datetime
 import plotly.express as px
+
 import geopandas as gpd
 from config import docket_data_link, document_data_link, dtype_dict_dock, dtype_dict, load_data
 
@@ -68,40 +68,17 @@ with line_section:
     
     df8 = df1.groupby(['docYear','DispGeneral']).count().reset_index()
     df8 = df8.rename(columns = {'uniqueID': 'Count'})
-    fig8 = px.bar(df8, x = 'docYear', y = 'Count', color = 'DispGeneral', title = 'Dispositions')
+    fig8 = px.bar(df8, x = 'docYear', y = 'Count', color = 'DispGeneral', title = 'Dispositions',
+                  color_discrete_sequence=px.colors.qualitative.Light24[2:])
+    fig8.update_layout(legend_traceorder="reversed")
     st.plotly_chart(fig8)
 
 
 with plot_section:
-    st.subheader('Filter Results by Year')
+    st.subheader('Court Origins over Time')
     
-    start_date = st.date_input('Start Date', datetime.date(2004,10,1), min_value = datetime.date(2004,10,1), max_value = datetime.date.today() - datetime.timedelta(days=1) )
-    end_date = st.date_input('End Date', datetime.date.today(), min_value = datetime.date(2004,10,2), max_value = datetime.date.today() )
-    if start_date < end_date:
-        st.success('Start date: `%s`\n\nEnd date:`%s`' % (start_date, end_date))
-    else:
-        st.error('Error: End date must fall after start date.')
-    df1['docDate'] = pd.to_datetime(df1['docDate']).dt.date
-
-    df_year_filter = df1[(df1['docDate'] > start_date) & (df1['docDate'] < end_date)]
-    origin_df = df_year_filter.groupby('origin').count()
-    fig_o = px.bar(origin_df.reset_index(), x = 'origin', y = 'uniqueID', title = 'Court Origins')
-    st.plotly_chart(fig_o)
-    
-    
-    yearXorigin_df = df_year_filter.groupby(['docYear','origin']).count()
+    yearXorigin_df = df1.groupby(['docYear','origin']).count()
     yearXorigin_df = yearXorigin_df.rename(columns = {'uniqueID': 'Count'})
-    fig_yearo = px.bar(yearXorigin_df.reset_index(), x = 'docYear', y = 'Count', color = 'origin', title = 'Court Origins over Time')
+    fig_yearo = px.bar(yearXorigin_df.reset_index(), x = 'docYear', y = 'Count', color = 'origin', title = 'Court Origins over Time',
+                       color_discrete_sequence=px.colors.qualitative.Light24[2:])
     st.plotly_chart(fig_yearo)
-
-    prec = df_year_filter.loc[df_year_filter['PrecedentialStatus'] == 'Precedential']
-    prec_gp = prec.groupby(['DispGeneral']).count().reset_index()
-    prec_gp = prec_gp.rename(columns = {'uniqueID': 'Count'})
-    fig_prec = px.pie(prec_gp, values = 'Count', names = 'DispGeneral',title = 'Precedential Case Results')
-    st.plotly_chart(fig_prec)
-
-    no_prec = df_year_filter.loc[df_year_filter['PrecedentialStatus'] != 'Precedential']
-    no_prec_gp = no_prec.groupby(['DispGeneral']).count().reset_index()
-    no_prec_gp = no_prec_gp.rename(columns = {'uniqueID': 'Count'})
-    no_fig_prec = px.pie(no_prec_gp, values = 'Count', names = 'DispGeneral',title = 'Non-Precedential Case Results')
-    st.plotly_chart(no_fig_prec)

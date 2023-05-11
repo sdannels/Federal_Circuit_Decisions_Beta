@@ -3,3 +3,4 @@ pandas==1.5.3
 plotly==5.13.0
 streamlit==1.18.1
 geopandas==0.12.2
+altair==4.2.2

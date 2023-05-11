@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import datetime
 import plotly.express as px
 
 import geopandas as gpd
@@ -27,6 +28,7 @@ else:
 
 with map_section:
     st.subheader('Originating Tribunal Counts')
+    st.write('Note: This page may take a moment to load.')
     
     # function that reads geoJSON data and caches it
     @st.cache_data()

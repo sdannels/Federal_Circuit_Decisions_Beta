@@ -7,7 +7,7 @@ Created on Thu Feb 16 20:00:30 2023
 
 import pandas as pd
 import streamlit as st
-from config import document_data_link, document_codebook_link, dtype_dict, filter_dataframe, load_data
+from config import document_data_link, document_codebook_link, dtype_dict, filter_dataframe, load_data, label_dict, reverse_label_dict, convert_df
 
 # set screen display to wide
 st.set_page_config(layout="wide")
@@ -37,7 +37,11 @@ with data_section:
     
     # read in data and display
     df = load_data(document_data_link, 
-                   state_name = 'df', dtype_dict = dtype_dict)
+                   state_name = 'df', 
+                   dtype_dict = dtype_dict)
+    # reset column names (this will change displayed columns)
+    # the names will be reset to the original labels when the download button is used
+    df = df.rename(columns=label_dict)
     
     # set up columns for widgets
     col1, col2 = st.columns(2)
@@ -57,12 +61,8 @@ with data_section:
         df_filtered = filter_dataframe(df)
     st.dataframe(df_filtered, use_container_width = True)
     
-    # function to convert data to csv
-    def convert_df(df):
-        return df.to_csv(index = False).encode('utf-8')
-    
-    # convert filtered data to csv
-    csv = convert_df(df_filtered)
+    # convert filtered data to csv (also relabels columns back to original names)
+    csv = convert_df(df_filtered, labels = reverse_label_dict)
     
     # download option
     st.download_button(label = 'Download Dataset', 

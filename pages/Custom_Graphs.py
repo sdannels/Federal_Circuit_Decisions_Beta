@@ -1,5 +1,8 @@
+import pandas as pd
 import streamlit as st
+import datetime
 import plotly.express as px
+import geopandas as gpd
 from config import docket_data_link, document_data_link, dtype_dict_dock, dtype_dict, load_data, filter_dataframe
 
 header = st.container()
@@ -8,20 +11,17 @@ graph_section = st.container()
 
 with header:
     st.title('Customizable Visualizations') # Name of the subpage
-    st.write("""Selecting the fields below will filter the data to use for the below visualizations. In addition to the
-     dropdown menus, Plotly graphs are customizable or downloadable using the menu on each individual graph.""")
-    st.write("""Clicking on a certain subfield in the Plotly menu will remove the subfield from the graph, allowing for an
-    alternative method of tuning visualizations. Double clicking on a subfield will only plot that specific subfield. """) 
+    st.write("""Selecting the fields below will change the data used for the below visualization. The *Filter Data*
+    selection will change the data being plotted, while selecting the variables changes which plot is displayed.""" )
+    st.write(""" In addition to the dropdown menus, Plotly graphs are customizable or downloadable using the menu on 
+    each individual graph.Clicking on a certain subfield in the Plotly menu will remove the subfield from the graph, allowing 
+    for an alternative method of tuning visualizations. Double clicking on a subfield will only plot that specific subfield. """) 
 
 with selection_section:
     
-    # read in data from document data set (stored in session state)
-    if 'df' in st.session_state:
-        df = st.session_state['df']
-    # if first page was not run yet, will need to read in data again
-    else:
-        df = load_data(document_data_link, 
-                       state_name = 'df', dtype_dict = dtype_dict)
+    # read in data and display
+    df = load_data(document_data_link, 
+                   state_name = 'df', dtype_dict = dtype_dict)
     
     # set up columns for widgets
     col1, col2 = st.columns(2)
@@ -68,7 +68,8 @@ with graph_section:
                           color_discrete_sequence=px.colors.qualitative.Light24[2:])
         elif 'origin' in df_cols:
             origin_df = df_filtered.groupby('origin').count()
-            figc = px.bar(origin_df.reset_index(), x = 'origin', y = 'uniqueID', title = 'Court Origins',
+            origin_df = origin_df.rename(columns = {'uniqueID': 'Count'})
+            figc = px.bar(origin_df.reset_index(), x = 'origin', y = 'Count', title = 'Court Origins',
                           color_discrete_sequence=px.colors.qualitative.Light24[2:])
             figc.update_layout(legend_traceorder="reversed")
         elif 'docYear' in df_cols:

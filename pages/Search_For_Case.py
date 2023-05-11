@@ -7,7 +7,7 @@ Created on Wed Mar 22 20:11:08 2023
 
 import pandas as pd
 import streamlit as st
-from config import load_data, document_data_link, dtype_dict
+from config import load_data, document_data_link, dtype_dict, label_dict
 
 # read in data from first page (stored in session state)
 if 'df' in st.session_state:
@@ -41,6 +41,8 @@ with case_search_section:
                      icon="🚨")
         else:
             # transpose dataframe and print
+            # relabel variable names for display
+            search_out = search_out.rename(columns=label_dict)
             return st.dataframe(search_out.T, height=(1000), width=(1000))
         
     

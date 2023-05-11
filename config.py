@@ -29,6 +29,11 @@ dtype_dict = {'uniqueID': str, 'docYear': int, 'origin': 'category',
               'designPatent_old': 'category', 'Appellant_Type_Primary': 'category',
               'Dissent': 'category', 'Concurrence': 'category'}
 
+# relabel columns in DataFrame on home page
+label_dict = {'uniqueID': 'ID', 'docYear':'Year'}
+# reverse the labels to reset them when downloading data
+reverse_label_dict = {v: k for k, v in label_dict.items()}
+
 ########## Set up dockets data set ################
 # link to docket data (*should not change*)
 docket_data_link = 'https://raw.githubusercontent.com/sdannels/Federal_Circuit_Decisions_Beta/main/Data/dockets.tab'
@@ -43,6 +48,11 @@ dtype_dict_dock = {'Year_Appeal_Filed': int, 'PACER_Gen': 'category',
                    'DistrictCourt': 'category', 'District_Court': 'category', 
                    'FY_Appeal_Filed': 'Int64'}
 
+# relabel columns in DataFrame on Dockets page
+label_dict_dock = {'PACER_ID': 'Pacer ID', 'Docket_Title':'Docket Title'}
+# reverse the labels to reset them when downloading data
+reverse_label_dict_dock = {v: k for k, v in label_dict_dock.items()}
+
 ########### Functions ###################
 # define function to load data
 # st.cache_data means the data is stored and doesn't need to be read again each time the user changes a variable
@@ -55,16 +65,39 @@ def load_data(data_path, state_name, dtype_dict):
         The file path to load the data
     state_name : str
         The name that the DataFrame will be stored as in the session state
+    dtype_dict : dictionary
+        Defines datatypes for each variable that does not properly filter
 
     Returns
     -------
     df : DataFrame
     '''
+    # read in data from CSV
     df = pd.read_csv(data_path, sep = '\t', dtype = dtype_dict)
     # save the data in the session_state so it can be accessed from other pages
     st.session_state[state_name] = df
     return df
 
+# function to convert data to csv
+def convert_df(df, labels):
+    '''
+    Parameters
+    ----------
+    df : DataFrame
+        Data to be converted to CSV.
+    labels : Dictionary
+        Dictionary that converts variable names back to original label.
+        These should match the Harvard Dataverse names.
+
+    Returns
+    -------
+    CSV of df used for download.
+
+    '''
+    # reset labels
+    df = df.rename(columns = labels)
+    # return converted CSV
+    return df.to_csv(index = False).encode('utf-8')
 
 # define function to filter data
 # see blog: https://blog.streamlit.io/auto-generate-a-dataframe-filtering-ui-in-streamlit-with-filter_dataframe/

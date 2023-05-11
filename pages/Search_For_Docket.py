@@ -7,7 +7,7 @@ Created on Wed Mar 22 21:40:38 2023
 
 import pandas as pd
 import streamlit as st
-from config import load_data, docket_data_link, dtype_dict_dock
+from config import load_data, docket_data_link, dtype_dict_dock, label_dict_dock
 
 # read in data from dockets page (stored in session state)
 if 'df_dock' in st.session_state:
@@ -39,6 +39,8 @@ with docket_search_section:
                      icon="🚨")
         else:
             # transpose dataframe and print
+            # relabel variable names for display
+            search_out = search_out.rename(columns=label_dict_dock)
             return st.dataframe(search_out.T, height=(1000), width=(1000))
         
     # search by Pacer ID
